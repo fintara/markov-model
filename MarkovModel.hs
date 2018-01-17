@@ -1,13 +1,16 @@
-{-# LANGUAGE OverloadedStrings #-}
+module MarkovModel 
+    ( createKGrams
+    , frequency
+    , probability
+    , generate
+    ) where
 
-module MarkovModel where
 
-import           Control.Monad (replicateM)
-import qualified Data.List as L
-import qualified Data.Map as M
+import qualified Data.List  as L
+import qualified Data.Map   as M
 import           Data.Maybe (fromJust)
 import           Data.Text (Text)
-import qualified Data.Text as T
+import qualified Data.Text  as T
 import           System.Random (randomRIO)
 
 
@@ -69,14 +72,3 @@ generate len seed table = generate' (T.empty, seed) [seed]
                 let gram' = T.tail gram `T.append` c'
                     acc'  = acc ++ [c']
                 generate' (c', gram') acc'
-
-
-main :: IO ()
-main = do
-    k     <- putStr "k = " >> readLn :: IO Int
-    t     <- putStr "T = " >> readLn :: IO Int
-    text  <- T.pack <$> getLine
-    let table = probability . frequency . createKGrams k $ text
-    result <- generate t (T.take k text) table
-    putStrLn "----------------------------------------------------------"
-    putStrLn (T.unpack result)
